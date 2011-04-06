@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_tesense_dpsintegration_Profile" items="${profiles}" z="ukt5TRCgdejF2dN2rmnKY0DegqQ=">
+        <table:table data="${profiles}" id="l_com_tesense_dpsintegration_Profile" path="/profiles" z="9wCGDy7rKO1T91lCpP+5MO6Uid4=">
+            <table:column id="c_com_tesense_dpsintegration_Profile_name" property="name" z="NvRffj/18X4ujeqL3Eyt1k0bUeQ="/>
+        </table:table>
+    </page:list>
+</div>

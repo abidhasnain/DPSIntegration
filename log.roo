@@ -1,0 +1,45 @@
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log opened at 2011-03-25 13:29:07
+project --topLevelPackage com.tesense.dpsintegration --projectName DPSIntegration --java 6
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log closed at 2011-03-25 13:29:10
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log opened at 2011-03-25 13:29:21
+persistence setup --database H2_IN_MEMORY --provider HIBERNATE 
+entity --class ~.Profile
+field string --fieldName name
+// [failed] field string --fieldName path
+q
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log closed at 2011-03-25 13:34:05
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log opened at 2011-03-25 13:35:12
+hint
+controller all --package ~
+security setup
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log closed at 2011-03-26 20:30:23
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log opened at 2011-03-29 15:18:37
+entity --class ~.Service.SensorStub
+field number --fieldName latitude --type java.lang.Double
+field number --fieldName longitude --type java.lang.Double
+// [failed] field number --fieldName longitude --type java.lang.Double
+entity --class ~.Coordinates
+field number --fieldName latitude --type java.lang.Double
+field number --fieldName longitude --type java.lang.Double
+test integration 
+// [failed] test integration --entity ~.profileController
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log closed at 2011-03-29 20:53:41
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log opened at 2011-03-31 16:46:22
+entity --class ~.service.Node
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log closed at 2011-03-31 23:52:30
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log opened at 2011-04-01 09:48:40
+// [failed] entity --class ~.service.Sensor
+field reference --fieldName node --type ~.service.Node
+entity --class ~.service.Coordinates 
+field number --fieldName latitude --type java.lang.Double
+field number --fieldName longitude --type java.lang.Double
+// [failed] entity --class ~.service.Sensor
+field reference --fieldName coordinate --type ~.service.Coordinates
+entity --class ~.service.NodeDetailForOrder
+field reference --fieldName node --type ~.service.Node
+field number --fieldName containerCount --type int
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log closed at 2011-04-02 08:48:27
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log opened at 2011-04-04 16:22:14
+focus --class ~.service.Sensor
+field string --fieldName name --notNull 
+// Spring Roo 1.1.2.RELEASE [rev fbc33bb] log closed at 2011-04-05 01:38:13
