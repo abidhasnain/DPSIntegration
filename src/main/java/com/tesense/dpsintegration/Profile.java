@@ -8,6 +8,15 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooToString
 @RooEntity
 public class Profile {
+	
+	private String name;
+//    public String profilePath;
+//    
+//	public Profile(String profileName, String profilePath){
+//		this.profileName=profileName;
+//		this.profilePath=profilePath;
+//		
+//	}
 
-    private String name;
+    	
 }

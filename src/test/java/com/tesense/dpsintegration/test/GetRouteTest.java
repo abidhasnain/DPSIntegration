@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.Assert;
 
 import com.tesense.dpsintegration.Location;
+import com.tesense.dpsintegration.Profile;
 import com.tesense.dpsintegration.ProfileController;
 import com.tesense.dpsintegration.service.Node;
 import com.tesense.dpsintegration.service.Sensor;
@@ -32,6 +33,8 @@ public class GetRouteTest {
 		sensors.add(new Sensor("sensor4", 50, node3));
 		sensors.add(new Sensor("sensor5", 60, node3));
 		sensors.add(new Sensor("sensor6", 70, node3));
+		
+		//Profile profile = new Profile("TestProfile", "D:\\Carp\\Workarea\\TestProfile");
 
 		List<Location> coordinates = ProfileController.getRoute(sensors, 50);
 		Assert.assertNotNull(coordinates);
