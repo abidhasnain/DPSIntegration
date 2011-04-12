@@ -63,23 +63,17 @@ public class ProfileController {
 			for (NodeDetailForOrder node : nodes) {
 				// HSSFRow dataRow =
 				// firstSheet.createRow(nodes.indexOf(node)+1);
-				String randomRef = new Integer((int) (10 * Math.random() + 1))
+				String randomRef = new Integer(nodes.indexOf(node)+1)
 						.toString();
 				String containerCount = Integer.toString(node
 						.getContainerCount());
 				writer.append('\n');
-				writer.append("A");
-				writer.append(';');// Action
-				writer.append(randomRef);
-				writer.append(';');// Call Reference
-				writer.append(randomRef);
-				writer.append(';');// Order Reference
-				writer.append("Customer Foo");
-				writer.append(';');// Customer Name
-				writer.append("C");
-				writer.append(';');// Type
-				writer.append(containerCount);
-				writer.append(';');// Container COUNT
+				writer.append("A");	writer.append(';');// Action
+				writer.append(randomRef);writer.append(';');// Call Reference
+				writer.append(randomRef);writer.append(';');// Order Reference
+				writer.append("Customer Foo");writer.append(';');// Customer Name
+				writer.append("C");writer.append(';');// Type
+				writer.append(containerCount);writer.append(';');// Container COUNT
 				writer.append(node.getNode().getLocation().getLatitude()
 						.toString()
 						+ " "
@@ -172,14 +166,14 @@ public class ProfileController {
 	private static String generateOutput(String orderPath) {
 		String DPSExeInputParameters = generateDPSInputParameters(orderPath);
 		System.out.println(DPSExeInputParameters);
-//		try {
-//			Runtime r = Runtime.getRuntime();
-//			Process p = null;
-//			p = r.exec(DPSExeInputParameters);
-//		} catch (Exception e) {
-//			System.out.println("error===" + e.getMessage());
-//			e.printStackTrace();
-//		}
+		try {
+			Runtime r = Runtime.getRuntime();
+			Process p = null;
+			p = r.exec(DPSExeInputParameters);
+		} catch (Exception e) {
+			System.out.println("error===" + e.getMessage());
+			e.printStackTrace();
+		}
 		// check .fin file, if contains errors then handle it accordingly
 		return "D:\\Carp\\Workarea\\TestProfile\\userout.csv";
 	}
