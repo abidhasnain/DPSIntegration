@@ -1,23 +1,20 @@
 package com.tesense.dpsintegration;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.springframework.context.ApplicationContext;
 import org.springframework.roo.addon.web.mvc.controller.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.tesense.dpsintegration.service.NodeDetailForOrder;
 import com.tesense.dpsintegration.service.Sensor;
+import com.tesenso.dpsintegration.utility.FileMonitor;
+import com.tesenso.dpsintegration.utility.FileMonitor.FileChangeListener;
+import com.tesenso.dpsintegration.utility.TestFileChangeListener;
 
 @RooWebScaffold(path = "profiles", formBackingObject = Profile.class)
 @RequestMapping("/profiles")
@@ -153,14 +150,29 @@ public class ProfileController {
 		}
 		return nodeDetailForOrders;
 	}
+	
+	public static List<Location> getLocations(String path) {
+		FileMonitor monitor = FileMonitor.getInstance();
+		TestFileChangeListener fileChangeListener = new TestFileChangeListener();
+		monitor.addFileChangeListener(fileChangeListener, path, 1000);
+		
+		while(!fileChangeListener.isFileChanged()){
+			System.out.println("not changed yet");
+		}
+		
+		monitor.
+		return null;
+	}
+	
 
 	public static List<Location> getRoute(List<Sensor> sensors, long threshold) {
 
 		String orderPath = generateOrderFile(filterSensors(sensors, threshold));
 		String outputPath = generateOutput(orderPath);
 		
+		
 
-		return null;
+		return getLocations(outputPath);
 	}
 
 	private static String generateOutput(String orderPath) {

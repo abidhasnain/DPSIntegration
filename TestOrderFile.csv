@@ -1,4 +1,10 @@
 action;callref;ordref;name;CD;Prod1;address1
-A;4;4;Customer Foo;C;3;57.7057 11.9879
-A;4;4;Customer Foo;C;3;57.6986 11.9703
-A;8;8;Customer Foo;C;3;57.7009 11.9698
+A;1;1;Customer Foo;C;3;57.7057 11.9879
+A;2;2;Customer Foo;C;3;57.6986 11.9703
+A;3;3;Customer Foo;C;3;57.7009 11.9698
+A;4;4;Customer Foo;C;3;57.6552 12.0166
+A;5;5;Customer Foo;C;3;57.6582 12.0311
+A;6;6;Customer Foo;C;3;57.6488 12.0143
+A;7;7;Customer Foo;C;3;57.7992 11.898
+A;8;8;Customer Foo;C;3;57.7364 11.9149
+A;9;9;Customer Foo;C;3;57.725 11.8874

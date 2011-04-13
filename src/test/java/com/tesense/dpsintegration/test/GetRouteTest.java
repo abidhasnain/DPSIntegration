@@ -49,6 +49,22 @@ public class GetRouteTest {
 		sensors.add(new Sensor("sensor8", 60, node6));
 		sensors.add(new Sensor("sensor9", 70, node6));
 		
+		Node node7 = new Node(57.7992, 11.8980);
+		sensors.add(new Sensor("sensor1", 50, node7));
+		sensors.add(new Sensor("sensor2", 60, node7));
+		sensors.add(new Sensor("sensor3", 70, node7));
+		
+		Node node8 = new Node(57.7364, 11.9149);
+		sensors.add(new Sensor("sensor4", 50, node8));
+		sensors.add(new Sensor("sensor5", 60, node8));
+		sensors.add(new Sensor("sensor6", 70, node8));
+		
+		Node node9 = new Node(57.7250, 11.8874);
+		sensors.add(new Sensor("sensor7", 50, node9));
+		sensors.add(new Sensor("sensor8", 60, node9));
+		sensors.add(new Sensor("sensor9", 70, node9));
+		
+		
 		//Profile profile = new Profile("TestProfile", "D:\\Carp\\Workarea\\TestProfile");
 
 		List<Location> coordinates = ProfileController.getRoute(sensors, 50);
