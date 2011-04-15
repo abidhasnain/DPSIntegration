@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.roo.addon.web.mvc.controller.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,23 +14,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.tesense.dpsintegration.service.NodeDetailForOrder;
 import com.tesense.dpsintegration.service.Sensor;
 import com.tesenso.dpsintegration.utility.FileMonitor;
-import com.tesenso.dpsintegration.utility.FileMonitor.FileChangeListener;
 import com.tesenso.dpsintegration.utility.TestFileChangeListener;
 
 @RooWebScaffold(path = "profiles", formBackingObject = Profile.class)
 @RequestMapping("/profiles")
 @Controller
 public class ProfileController {
+	@Autowired
+	private Profile profile;
+	
+	public Profile getProfile() {
+		return profile;
+	}
+
+	public void setProfile(Profile profile) {
+		this.profile = profile;
+	}
+
+	public static final String LOGIX_DPS_PATH = "D:/Carp/logix32/WLI32.EXE";
+	public static final String FILE_PARAM = "/f";
+	public static final String HIDDEN_PARAM = "/h";
+	public static final String SCHED_PARAM = "/s";
+	public static final String PROFILE_PARAM = "/x";
+	
+	public static final String WORKAREA_PATH = "D:/Carp/Workarea";
+	public static final String USEROUT_PATH = "/userout.csv";
+	public static final String WLI32_PATH = "/wli32.fin";
 
 	public static String generateOrderFile(List<NodeDetailForOrder> nodes) {
 
-		// String path = new String();
-		//
-		// HSSFWorkbook workbook = new HSSFWorkbook();
-		//
-		// HSSFSheet firstSheet = workbook.createSheet();
-		//
-		// HSSFRow headerRow = firstSheet.createRow(0);
 		File testOrderFile = null;
 		FileWriter writer = null;
 		try {
@@ -50,36 +63,28 @@ public class ProfileController {
 			writer.append(';');
 			writer.append("address1");
 
-			// (headerRow.createCell(9)).setCellValue(new
-			// HSSFRichTextString("ADDRESS"));
-			// (headerRow.createCell(10)).setCellValue(new
-			// HSSFRichTextString("address4"));
-			// (headerRow.createCell(5)).setCellValue(new
-			// HSSFRichTextString("Customer Info 1"));
-
 			for (NodeDetailForOrder node : nodes) {
-				// HSSFRow dataRow =
-				// firstSheet.createRow(nodes.indexOf(node)+1);
-				String randomRef = new Integer(nodes.indexOf(node)+1)
-						.toString();
-				String containerCount = Integer.toString(node
-						.getContainerCount());
+				String latitude = node.getNode().getLocation().getLatitude().toString();
+				String longitude = node.getNode().getLocation().getLongitude().toString();
+				String randomRef = new Integer(nodes.indexOf(node) + 1).toString();
+				String containerCount = Integer.toString(node.getContainerCount());
+
 				writer.append('\n');
-				writer.append("A");	writer.append(';');// Action
-				writer.append(randomRef);writer.append(';');// Call Reference
-				writer.append(randomRef);writer.append(';');// Order Reference
-				writer.append("Customer Foo");writer.append(';');// Customer Name
-				writer.append("C");writer.append(';');// Type
-				writer.append(containerCount);writer.append(';');// Container COUNT
-				writer.append(node.getNode().getLocation().getLatitude()
-						.toString()
-						+ " "
-						+ node.getNode().getLocation().getLongitude()
-								.toString()); // Address 1
-				// (dataRow.createCell(5)).setCellValue(new
-				// HSSFRichTextString("Customer Info 1")); // Customer Info 1
+				writer.append("A"); //Type
+				writer.append(';');// Action
+				writer.append(randomRef);
+				writer.append(';');// Call Reference
+				writer.append(randomRef);
+				writer.append(';');// Order Reference
+				writer.append("Customer Foo");
+				writer.append(';');// Customer Name
+				writer.append("C");
+				writer.append(';');// Type
+				writer.append(containerCount);
+				writer.append(';');// Container COUNT
+				writer.append(latitude + " " + longitude); // Address 1
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -93,33 +98,6 @@ public class ProfileController {
 			}
 		}
 
-		// try {
-		// FileOutputStream fos = null;
-		// File file = new File("TestOrderFile.csv");
-		//
-		//
-		//
-		//
-		//
-		// fos = new FileOutputStream(file);
-		//
-		// workbook.write(fos);
-		//
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// } finally {
-		// if (fos != null) {
-		// try {
-		// fos.flush();
-		// fos.close();
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
-		// }
-		// }
-		// //*/
-
-		//System.out.println(testOrderFile.getAbsolutePath());
 		return testOrderFile.getAbsolutePath();
 
 		// return null;
@@ -131,15 +109,11 @@ public class ProfileController {
 		List<NodeDetailForOrder> nodeDetailForOrders = new ArrayList<NodeDetailForOrder>();
 		for (Sensor sensor : sensors) {
 			if (sensor.getFillLevel() >= threshold) {
-				NodeDetailForOrder currentNode = new NodeDetailForOrder(
-						sensor.getNode());
+				NodeDetailForOrder currentNode = new NodeDetailForOrder(sensor.getNode());
 				if (nodeDetailForOrders.contains(currentNode)) {
 					int i = nodeDetailForOrders.indexOf(currentNode);
-					NodeDetailForOrder newNodeDetailForOrder = nodeDetailForOrders
-							.get(i);
-					newNodeDetailForOrder
-							.setContainerCount(newNodeDetailForOrder
-									.getContainerCount() + 1);
+					NodeDetailForOrder newNodeDetailForOrder = nodeDetailForOrders.get(i);
+					newNodeDetailForOrder.setContainerCount(newNodeDetailForOrder.getContainerCount() + 1);
 				} else {
 					NodeDetailForOrder newNodeDetailForOrder = new NodeDetailForOrder();
 					newNodeDetailForOrder.setNode(currentNode.getNode());
@@ -150,74 +124,64 @@ public class ProfileController {
 		}
 		return nodeDetailForOrders;
 	}
-	
-	public static List<Location> getLocations(String path) {
-		FileMonitor monitor = FileMonitor.getInstance();
-		TestFileChangeListener fileChangeListener = new TestFileChangeListener();
-		monitor.addFileChangeListener(fileChangeListener, path, 1000);
-		
-		while(!fileChangeListener.isFileChanged()){
+
+	public static List<Location> getLocations(ArrayList<TestFileChangeListener> fileChangeListeners) {
+
+		boolean isFilesChanged = false;
+		while (!isFilesChanged) {
+
 			System.out.println("not changed yet");
+			for (TestFileChangeListener fileChangeListener : fileChangeListeners) {
+				isFilesChanged = isFilesChanged	&& fileChangeListener.isFileChanged();
+			}
 		}
-		
-		monitor.
+
 		return null;
 	}
-	
 
 	public static List<Location> getRoute(List<Sensor> sensors, long threshold) {
 
 		String orderPath = generateOrderFile(filterSensors(sensors, threshold));
-		String outputPath = generateOutput(orderPath);
-		
-		
+		ArrayList<TestFileChangeListener> fileChangeListeners = generateOutput(orderPath);
 
-		return getLocations(outputPath);
+		return getLocations(fileChangeListeners);
 	}
 
-	private static String generateOutput(String orderPath) {
-		String DPSExeInputParameters = generateDPSInputParameters(orderPath);
+	private static ArrayList<TestFileChangeListener> generateOutput(String orderPath) {
+		//input params to be pass to the logixIE
+		String DPSExeInputParameters = 	LOGIX_DPS_PATH+" "+ 						//LogixIE.exe path
+										FILE_PARAM+" "+     						// "/f" telling for file next
+										orderPath +" "+     						//  order file path
+										HIDDEN_PARAM+SCHED_PARAM+PROFILE_PARAM+" "+ // "/h" instruct for hidden work, ""
+																					// "/s" instruct to schedule
+																					// "/x" tell which profile to excess
+										WORKAREA_PATH+"/testprofile";				// "/x" is followed by profile path
+		
 		System.out.println(DPSExeInputParameters);
+		
+		String currProfileUserOutPath = WORKAREA_PATH + "/TestProfile" + USEROUT_PATH; 
+		String currProfileWli32Path = WORKAREA_PATH + "/TestProfile" + WLI32_PATH;
+		
+		//created to look for change in userout.csv
+		FileMonitor monitor = FileMonitor.getInstance();
+		TestFileChangeListener userOutChangeListener = new TestFileChangeListener();
+		TestFileChangeListener wli32ChangeListener = new TestFileChangeListener();
+
 		try {
 			Runtime r = Runtime.getRuntime();
-			Process p = null;
+			Process p	 = null;
 			p = r.exec(DPSExeInputParameters);
+			monitor.addFileChangeListener(userOutChangeListener, currProfileUserOutPath, 1000);
+			monitor.addFileChangeListener(wli32ChangeListener, currProfileWli32Path, 1000);
+			
 		} catch (Exception e) {
 			System.out.println("error===" + e.getMessage());
 			e.printStackTrace();
 		}
-		// check .fin file, if contains errors then handle it accordingly
-		return "D:\\Carp\\Workarea\\TestProfile\\userout.csv";
-	}
-
-	private static String generateDPSInputParameters(String orderPath) {
-
-		// below variables should be members of some class so that profile path
-		// variable could be accessed later on in order to locate the generated
-		// userout.csv
-		String LogixExePath = "\"D:\\Carp\\logix32\\WLI32.EXE\""; // Future: set
-																	// it in
-																	// some
-																	// global
-																	// configuration
-																	// later and
-																	// read from
-																	// there.
-		String importOrders = " /f \"" + orderPath + "\""; // Future: implement
-															// better mechanism
-															// of adding /f
-															// before order file
-															// path, read from
-															// some place global
-															// as above
-		String miscParameters = " /h /s /x "; // Future: same as above, build a
-												// string. Mind the space in the
-												// beginning and the end!
-		String profilePath = "\"D:\\Carp\\Workarea\\TESTPROFILE\""; //
-		// Future: set it in some global configuration later and read from
-		// there.
-
-		return LogixExePath + importOrders + miscParameters
-				+ profilePath;
+		ArrayList<TestFileChangeListener> fileChangeListeners = new ArrayList<TestFileChangeListener>();
+		fileChangeListeners.add(userOutChangeListener);
+		fileChangeListeners.add(wli32ChangeListener);
+		
+		return fileChangeListeners;
 	}
 }
