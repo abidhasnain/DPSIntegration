@@ -59,7 +59,7 @@ public class CSVParser {
 			}
 			
 			if (!isColAddFound && col.toUpperCase().equals("address_1".toUpperCase())){
-				colSequence = cols.indexOf(col);
+				colAdd1 = cols.indexOf(col);
 				isColAddFound = true;
 			}			
 			
