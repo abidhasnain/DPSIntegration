@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.roo.addon.web.mvc.controller.RooWebScaffold;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.tesense.dpsintegration.service.NodeDetailForOrder;
 import com.tesense.dpsintegration.service.Sensor;
+import com.tesenso.dpsintegration.utility.CSVParser;
 import com.tesenso.dpsintegration.utility.FileMonitor;
 import com.tesenso.dpsintegration.utility.TestFileChangeListener;
 
@@ -21,16 +23,8 @@ import com.tesenso.dpsintegration.utility.TestFileChangeListener;
 @Controller
 public class ProfileController {
 	@Autowired
-	private Profile profile;
+	public static Profile profile;
 	
-	public Profile getProfile() {
-		return profile;
-	}
-
-	public void setProfile(Profile profile) {
-		this.profile = profile;
-	}
-
 	public static final String LOGIX_DPS_PATH = "D:/Carp/logix32/WLI32.EXE";
 	public static final String FILE_PARAM = "/f";
 	public static final String HIDDEN_PARAM = "/h";
@@ -129,18 +123,35 @@ public class ProfileController {
 
 		boolean isFilesChanged = false;
 		while (!isFilesChanged) {
-
 			System.out.println("not changed yet");
+			isFilesChanged = true;
 			for (TestFileChangeListener fileChangeListener : fileChangeListeners) {
+				System.out.println(fileChangeListener.isFileChanged());
 				isFilesChanged = isFilesChanged	&& fileChangeListener.isFileChanged();
 			}
 		}
+		
+		String useroutCompletePath = WORKAREA_PATH+ "/" + profile.getName()+USEROUT_PATH;
+		List userOut = null;
+		
+		try {
+			userOut = CSVParser.parseLocation(new File(useroutCompletePath));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		CSVParser.getLocation(userOut);
+		
+		
+	
 
 		return null;
 	}
 
 	public static List<Location> getRoute(List<Sensor> sensors, long threshold) {
 
+		profile = new Profile();
+		profile.setName("testprofile");
 		String orderPath = generateOrderFile(filterSensors(sensors, threshold));
 		ArrayList<TestFileChangeListener> fileChangeListeners = generateOutput(orderPath);
 
@@ -155,32 +166,35 @@ public class ProfileController {
 										HIDDEN_PARAM+SCHED_PARAM+PROFILE_PARAM+" "+ // "/h" instruct for hidden work, ""
 																					// "/s" instruct to schedule
 																					// "/x" tell which profile to excess
-										WORKAREA_PATH+"/testprofile";				// "/x" is followed by profile path
+										WORKAREA_PATH+ "/" + profile.getName();		// "/x" is followed by profile path
 		
 		System.out.println(DPSExeInputParameters);
 		
-		String currProfileUserOutPath = WORKAREA_PATH + "/TestProfile" + USEROUT_PATH; 
-		String currProfileWli32Path = WORKAREA_PATH + "/TestProfile" + WLI32_PATH;
+		String currProfileUserOutPath = WORKAREA_PATH + "/" + profile.getName() + USEROUT_PATH; 
+		String currProfileWli32Path = WORKAREA_PATH + "/" + profile.getName() + WLI32_PATH;
 		
 		//created to look for change in userout.csv
 		FileMonitor monitor = FileMonitor.getInstance();
 		TestFileChangeListener userOutChangeListener = new TestFileChangeListener();
+		
 		TestFileChangeListener wli32ChangeListener = new TestFileChangeListener();
-
+		monitor.addFileChangeListener(userOutChangeListener, currProfileUserOutPath, 1000);
+		monitor.addFileChangeListener(wli32ChangeListener, currProfileWli32Path, 1000);
+		
+		
+		ArrayList<TestFileChangeListener> fileChangeListeners = new ArrayList<TestFileChangeListener>();
+		fileChangeListeners.add(userOutChangeListener);
+		fileChangeListeners.add(wli32ChangeListener);
 		try {
 			Runtime r = Runtime.getRuntime();
 			Process p	 = null;
 			p = r.exec(DPSExeInputParameters);
-			monitor.addFileChangeListener(userOutChangeListener, currProfileUserOutPath, 1000);
-			monitor.addFileChangeListener(wli32ChangeListener, currProfileWli32Path, 1000);
 			
 		} catch (Exception e) {
 			System.out.println("error===" + e.getMessage());
 			e.printStackTrace();
 		}
-		ArrayList<TestFileChangeListener> fileChangeListeners = new ArrayList<TestFileChangeListener>();
-		fileChangeListeners.add(userOutChangeListener);
-		fileChangeListeners.add(wli32ChangeListener);
+		
 		
 		return fileChangeListeners;
 	}

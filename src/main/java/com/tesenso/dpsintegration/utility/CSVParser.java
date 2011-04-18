@@ -66,7 +66,8 @@ public class CSVParser {
 			if (isColAddFound && isColSeqFound){
 				break;
 			}
-		}		
+		}	
+		System.out.println(colSequence + " - " + colAdd1  );
 		
 		return null;
 	}
