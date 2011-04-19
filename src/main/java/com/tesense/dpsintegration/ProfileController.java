@@ -16,7 +16,7 @@ import com.tesense.dpsintegration.service.NodeDetailForOrder;
 import com.tesense.dpsintegration.service.Sensor;
 import com.tesenso.dpsintegration.utility.CSVParser;
 import com.tesenso.dpsintegration.utility.FileMonitor;
-import com.tesenso.dpsintegration.utility.TestFileChangeListener;
+import com.tesenso.dpsintegration.utility.DPSFileChangeListener;
 
 @RooWebScaffold(path = "profiles", formBackingObject = Profile.class)
 @RequestMapping("/profiles")
@@ -119,13 +119,13 @@ public class ProfileController {
 		return nodeDetailForOrders;
 	}
 
-	public static List<Location> getLocations(ArrayList<TestFileChangeListener> fileChangeListeners) {
+	public static List<Location> getLocations(ArrayList<DPSFileChangeListener> fileChangeListeners) {
 
 		boolean isFilesChanged = false;
 		while (!isFilesChanged) {
 			System.out.println("not changed yet");
 			isFilesChanged = true;
-			for (TestFileChangeListener fileChangeListener : fileChangeListeners) {
+			for (DPSFileChangeListener fileChangeListener : fileChangeListeners) {
 				System.out.println(fileChangeListener.isFileChanged());
 				isFilesChanged = isFilesChanged	&& fileChangeListener.isFileChanged();
 			}
@@ -153,12 +153,12 @@ public class ProfileController {
 		profile = new Profile();
 		profile.setName("testprofile");
 		String orderPath = generateOrderFile(filterSensors(sensors, threshold));
-		ArrayList<TestFileChangeListener> fileChangeListeners = generateOutput(orderPath);
+		ArrayList<DPSFileChangeListener> fileChangeListeners = generateOutput(orderPath);
 
 		return getLocations(fileChangeListeners);
 	}
 
-	private static ArrayList<TestFileChangeListener> generateOutput(String orderPath) {
+	private static ArrayList<DPSFileChangeListener> generateOutput(String orderPath) {
 		//input params to be pass to the logixIE
 		String DPSExeInputParameters = 	LOGIX_DPS_PATH+" "+ 						//LogixIE.exe path
 										FILE_PARAM+" "+     						// "/f" telling for file next
@@ -175,14 +175,14 @@ public class ProfileController {
 		
 		//created to look for change in userout.csv
 		FileMonitor monitor = FileMonitor.getInstance();
-		TestFileChangeListener userOutChangeListener = new TestFileChangeListener();
+		DPSFileChangeListener userOutChangeListener = new DPSFileChangeListener();
 		
-		TestFileChangeListener wli32ChangeListener = new TestFileChangeListener();
+		DPSFileChangeListener wli32ChangeListener = new DPSFileChangeListener();
 		monitor.addFileChangeListener(userOutChangeListener, currProfileUserOutPath, 1000);
 		monitor.addFileChangeListener(wli32ChangeListener, currProfileWli32Path, 1000);
 		
 		
-		ArrayList<TestFileChangeListener> fileChangeListeners = new ArrayList<TestFileChangeListener>();
+		ArrayList<DPSFileChangeListener> fileChangeListeners = new ArrayList<DPSFileChangeListener>();
 		fileChangeListeners.add(userOutChangeListener);
 		fileChangeListeners.add(wli32ChangeListener);
 		try {
